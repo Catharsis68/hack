@@ -9,17 +9,17 @@ import { default as contract } from 'truffle-contract'
 import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-const MetaCoin = contract(metacoin_artifacts);
+var MetaCoin = contract(metacoin_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
 // For application bootstrapping, check out window.addEventListener below.
-const accounts;
-const account;
+var accounts;
+var account;
 
 window.App = {
-  start: () => {
-    const self = this;
+  start: function() {
+    var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
     MetaCoin.setProvider(web3.currentProvider);
@@ -44,19 +44,19 @@ window.App = {
   },
 
   setStatus: function(message) {
-    const status = document.getElementById("status");
+    var status = document.getElementById("status");
     status.innerHTML = message;
   },
 
   refreshBalance: function() {
-    const self = this;
+    var self = this;
 
-    const meta;
+    var meta;
     MetaCoin.deployed().then(function(instance) {
       meta = instance;
       return meta.getBalance.call(account, {from: account});
     }).then(function(value) {
-      const balance_element = document.getElementById("balance");
+      var balance_element = document.getElementById("balance");
       balance_element.innerHTML = value.valueOf();
     }).catch(function(e) {
       console.log(e);
@@ -65,14 +65,14 @@ window.App = {
   },
 
   sendCoin: function() {
-    const self = this;
+    var self = this;
 
-    const amount = parseInt(document.getElementById("amount").value);
-    const receiver = document.getElementById("receiver").value;
+    var amount = parseInt(document.getElementById("amount").value);
+    var receiver = document.getElementById("receiver").value;
 
     this.setStatus("Initiating transaction... (please wait)");
 
-    const meta;
+    var meta;
     MetaCoin.deployed().then(function(instance) {
       meta = instance;
       return meta.sendCoin(receiver, amount, {from: account});
