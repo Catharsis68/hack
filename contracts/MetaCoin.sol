@@ -8,7 +8,7 @@ import "./ConvertLib.sol";
 // token, see: https://github.com/ConsenSys/Tokens. Cheers!
 
 contract MetaCoin {
-	
+
 	mapping (address => uint) balances;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -17,7 +17,7 @@ contract MetaCoin {
 		balances[tx.origin] = 1000;
 	}
 
-	function sendCoin(address receiver, uint amount) public returns(bool sufficient) {
+	function sendCoin(address receiver, uint amount) public returns(bool sufficient) {		
 		if (balances[msg.sender] < amount) return false;
 		balances[msg.sender] -= amount;
 		balances[receiver] += amount;

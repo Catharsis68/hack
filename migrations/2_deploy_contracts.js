@@ -4,6 +4,7 @@ var TimeDeliveryManagement = artifacts.require('./TimeDeliveryManagement.sol');
 
 module.exports = function(deployer) {
   deployer.deploy(ConvertLib);
-  deployer.link(ConvertLib, TimeDeliveryManagement);
+  deployer.link(ConvertLib, MetaCoin);
+  deployer.deploy(MetaCoin);
   deployer.deploy(TimeDeliveryManagement);
 };
