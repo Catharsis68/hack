@@ -19,6 +19,7 @@ contract TimeDeliveryManagement {
         uint    price;
         string  gate;
         string  logisticType;
+        address supplierAd;
     }
 
     struct Supplier {
@@ -38,12 +39,12 @@ contract TimeDeliveryManagement {
             maxDSId =0;
     }
 
-    function createDeliverySlot(string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType)  public returns (uint currentID)
+    function createDeliverySlot(string warehousename,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType)  public returns (uint currentID)
     {
         if (msg.sender != warehouse) return;
         currentID = maxDSId++;
 
-        suppliers[msg.sender].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, isTradeable,timeFrom,timeTo,price,gate,logisticType);
+        suppliers[msg.sender].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
         debug = "successful createDeliverySlot";
         return currentID;
     }
@@ -59,13 +60,6 @@ contract TimeDeliveryManagement {
         return success;
     }
 
-    function getFirstDeliverySlots(uint indexofDS) public returns (string success)
-    {
-      //TODO
-        //prüfe Vergangeheit
-        success = suppliers[warehouse].deliverySlots[indexofDS].warehousename;
-        return success;
-    }
 
     function getAllDeliverySlots(string searchstring) public returns (string response)
     {
@@ -74,7 +68,7 @@ contract TimeDeliveryManagement {
         for (uint i = 1; i < maxDSId; i++) {
           DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
           //check if Old  //check if available
-          if(myDelSlot.timeTo >   block.timestamp || !myDelSlot.isTradeable) continue;
+          if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) continue;
 
           response.concat("{");
           response.concat(myDelSlot.warehousename).concat(" , ");
@@ -83,6 +77,7 @@ contract TimeDeliveryManagement {
           response.concat(myDelSlot.gate).concat(" , ");
           response.concat(myDelSlot.logisticType).concat(" , ");
           response.concat("},");
+          //Todo , not in last record
         }
         response.concat("]}");
         debug = "successful getAllDeliverySlots";
@@ -93,14 +88,13 @@ contract TimeDeliveryManagement {
     function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
     {
       DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idOfDS];
-      //check if Old
-      if(myDelSlot.timeFrom >   block.timestamp) return false;
-      //TOO nur besizte darf freigeben
-
+      //check if Old and isTradeable
+      if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) return false;
 
       myDelSlot.isTradeable = false;
+      myDelSlot.supplierAd = msg.sender;
       suppliers[warehouse].deliverySlots[idOfDS] = myDelSlot;
-      suppliers[msg.sender].deliverySlots[idOfDS] = myDelSlot;
+
       return true;
     }
 
@@ -108,7 +102,10 @@ contract TimeDeliveryManagement {
     {
       DeliverySlot storage myDelSlot =suppliers[msg.sender].deliverySlots[idOfDS];
       //check if Old
-      if(myDelSlot.timeTo >   block.timestamp) return false;
+      if(myDelSlot.timeTo <   block.timestamp) return false;
+      // nur besizte darf freigeben
+      if(myDelSlot.supplierAd != msg.sender) return false;
+
 
       myDelSlot.isTradeable = true;
       return true;
