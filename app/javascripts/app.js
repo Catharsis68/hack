@@ -6,11 +6,11 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
+// import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 import tdm_artifacts from '../../build/contracts/TimeDeliveryManagement.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+// var MetaCoin = contract(metacoin_artifacts);
 var TimeDeliveryManagement = contract(tdm_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
@@ -19,32 +19,36 @@ var TimeDeliveryManagement = contract(tdm_artifacts);
 var accounts;
 var account;
 
-var date;
 
 window.App = {
   start: function() {
     var self = this;
 
+    document.getElementById('datePicker').valueAsDate = new Date();
+
     // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider);
+    // MetaCoin.setProvider(web3.currentProvider);
+
+    // Init TimeDeliveryManagement
+    TimeDeliveryManagement.setProvider(web3.currentProvider);
 
     // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {
-        alert("There was an error fetching your accounts.");
-        return;
-      }
-
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-        return;
-      }
-
-      accounts = accs;
-      account = accounts[0];
-
-      self.refreshBalance();
-    });
+    // web3.eth.getAccounts(function(err, accs) {
+    //   if (err != null) {
+    //     alert("There was an error fetching your accounts.");
+    //     return;
+    //   }
+    //
+    //   if (accs.length == 0) {
+    //     alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+    //     return;
+    //   }
+    //
+    //   accounts = accs;
+    //   account = accounts[0];
+    //
+    //   self.refreshBalance();
+    // });
   },
 
   setStatus: function(message) {
@@ -52,50 +56,60 @@ window.App = {
     status.innerHTML = message;
   },
 
-  refreshBalance: function() {
-    var self = this;
+  // refreshBalance: function() {
+  //   var self = this;
+  //
+  //   var meta;
+  //   MetaCoin.deployed().then(function(instance) {
+  //     meta = instance;
+  //     return meta.getBalance.call(account, {from: account});
+  //   }).then(function(value) {
+  //     var balance_element = document.getElementById("balance");
+  //     balance_element.innerHTML = value.valueOf();
+  //   }).catch(function(e) {
+  //     console.log(e);
+  //     self.setStatus("Error getting balance; see log.");
+  //   });
+  // },
 
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
-    }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error getting balance; see log.");
-    });
-  },
-
-  sendCoin: function() {
-    var self = this;
-
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
-
-    this.setStatus("Initiating transaction... (please wait)");
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
-      self.setStatus("Transaction complete!");
-      self.refreshBalance();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error sending coin; see log.");
-    });
-  },
-
-  setDate: function() {
-    date = new Date();
-    console.log(`Date ${date}.`);
-  },
+  // sendCoin: function() {
+  //   var self = this;
+  //
+  //   var amount = parseInt(document.getElementById("amount").value);
+  //   var receiver = document.getElementById("receiver").value;
+  //
+  //   this.setStatus("Initiating transaction... (please wait)");
+  //
+  //   var meta;
+  //   MetaCoin.deployed().then(function(instance) {
+  //     meta = instance;
+  //     return meta.sendCoin(receiver, amount, {from: account});
+  //   }).then(function() {
+  //     self.setStatus("Transaction complete!");
+  //     self.refreshBalance();
+  //   }).catch(function(e) {
+  //     console.log(e);
+  //     self.setStatus("Error sending coin; see log.");
+  //   });
+  // },
 
   createDeliverySlot: function() {
+    var self = this;
 
+    var tdm;
+    TimeDeliveryManagement.deployed().then(function(instance){
+      tdm = instance;
+
+      return tdm.createDeliverySlot(123434, true, "string from", "string to", 25, "string gate", "string warehouseName", "string deliveryType");
+    })
+    .then(function(res) {
+      self.setStatus("Transaction complete!");
+      console.log('create delivery slot success', res);
+    })
+    .catch(function(error) {
+      console.log(error);
+      self.setStatus(`Error ${error}.`);
+    });
   },
 
   updateDeliverySlot: function() {
@@ -119,17 +133,18 @@ window.App = {
   sendRequest:function() {
     var self = this;
 
-    setDate();
-
     var from = parseInt(document.getElementById("from").value);
     var to = parseInt(document.getElementById("to").value);
 
-    var type = document.getElementById("deliveryType").value;
+    var e = document.getElementById("deliveryType");
+    var type = e.options[e.selectedIndex].text;
 
-    var inputDate = date ? date : 'date not defined';
+    var date = document.getElementById('datePicker').value;
+    // valueAsDate // valueAsNumber
+
     // TimeDeliveryManagement.
 
-    console.log(`von: ${from} bis ${to} Uhr am ${date} mit dem Typ: ${deliveryType}`);
+    console.log(`von: ${from} bis ${to} Uhr am ${date} mit dem Typ: ${type}`);
   }
 
 };

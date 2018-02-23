@@ -12,12 +12,12 @@ label {
 
 .time {
   display: flex;
-  width: 25%;
+  width: 30%;
 }
 
 .date {
   display: flex;
-  width: 50%;
+  width: 60%;
 }
 
 input {

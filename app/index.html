@@ -19,19 +19,20 @@
   <span id="status"></span>
 
   <!-- input data: time from - to date -->
-  <label for="from">Von:</label><input type="time" class="time" id="from" value="12:00" required></input>
+  <label for="from">Von:</label><input type="time" class="time" id="from" value="12:00"  required></input>
   <label for="to">Bis:</label><input type="time" class="time" id="to" value="12:30" required></input>
 
   <label for="deliveryType">Bis:</label>
-  <select name="deliveryType">
+  <select name="deliveryType" id="deliveryType">
     <option value="food">Food</option>
     <option value="nonfood">Nonfood</option>
     <option value="cars">Cars</option>
   </select>
 
-  <input type="date" class="date" id="date" required></input>
-
+  <input type="date" class="date" id="datePicker" required></input>
   <input type="button" onclick="App.sendRequest()" value="Anfragen">
+  
+  <br><br><button id="send" onclick="App.createDeliverySlot()">Create Delivery Slot</button>
 
   <br>
   <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
