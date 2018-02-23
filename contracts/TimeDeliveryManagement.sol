@@ -1,17 +1,21 @@
 
 //import "https://github.com/Arachnid/solidity-stringutils/blob/master/strings.sol";
 
+//https://github.com/willitscale/solidity-util#concatstring--string kopiert
+import "./Strings.sol";
+
 pragma solidity ^0.4.0;
 
 contract TimeDeliveryManagement {
 
+    using Strings for string;
     string public debug ;
 
     struct DeliverySlot{
-        uint256 id;
+        uint id;
         bool    isTradeable;
-        string  timeFrom;
-        string  timeTo;
+        uint  timeFrom;
+        uint  timeTo;
         uint    price;
         string  gate;
         string  warehousename;
@@ -20,11 +24,11 @@ contract TimeDeliveryManagement {
 
     struct Supplier {
         address userId;
-        mapping (uint256 => DeliverySlot) deliverySlots;
+        mapping (uint => DeliverySlot) deliverySlots;
         //DeliverySlot[] deliverySlots;
     }
 
-    uint256 public maxid;
+    uint public maxid;
 
     address public warehouse;
     mapping(address => Supplier) suppliers;
@@ -36,51 +40,71 @@ contract TimeDeliveryManagement {
             maxid =0;
         }
 
-    function createDeliverySlot()  public returns (uint256 currentID
+    function createDeliverySlot()  public returns (uint currentID
       ) {
         if (msg.sender != warehouse) return;
         currentID = maxid++;
-        suppliers[msg.sender].deliverySlots[currentID] = DeliverySlot(currentID,true,"gestern","heute",5,"123","Warenhaus1", "Food" );
+        suppliers[msg.sender].deliverySlots[currentID] = DeliverySlot(currentID,true,1245,1234,5,"123","Warenhaus1", "Food" );
         debug = "hat geklappt";
         return currentID;
     }
 
-    function getFirstDeliverySlots(uint256 indexofDS) public returns (string success)
+    function getFirstDeliverySlots(uint indexofDS) public returns (string success)
     {
         //prüfe Vergangeheit
-        success = suppliers[warehouse].deliverySlots[indexofDS].timeFrom;
+        success = suppliers[warehouse].deliverySlots[indexofDS].warehousename;
         return success;
     }
 
     function getAllDeliverySlots(string searchstring) public returns (string success)
     {
-        //prüfe Vergangeheit
-        string storage s1=  suppliers[warehouse].deliverySlots[0].timeFrom;
-        string storage s2=  suppliers[warehouse].deliverySlots[0].timeTo;
-        return s1;
+
+        success = "{[";
+
+        for (uint i = 1; i < maxid; i++) {
+          //check if Old
+          if(myDelSlot.timeTo >   block.timestamp) continue;
+          //check if available
+
+          success.concat("{");
+          DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
+          success.concat(myDelSlot.warehousename).concat(" , ");
+          //success.concat(myDelSlot.timeFrom).concat(" , ");
+          //success.concat(myDelSlot.timeTo).concat(" , ");
+          success.concat(myDelSlot.gate).concat(" , ");
+          success.concat(myDelSlot.logisticType).concat(" , ");
+          success.concat("}");
+        }
+        success.concat("]}");
+
+        return success;
     }
 
-    function purchaseDeliverySlot(uint256 idOfDS) public returns (bool success)
+    function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
     {
-      //prüfe Vergangeheit
       DeliverySlot storage deSlot = suppliers[warehouse].deliverySlots[idOfDS];
+      //check if Old
+      if(myDelSlot.timeTo >   block.timestamp) return false;
+
       deSlot.isTradeable = false;
       suppliers[msg.sender].deliverySlots[idOfDS] = deSlot;
       return true;
     }
 
-    function offerDeliverySlot(uint256 idOfDS) public returns (bool success)
+    function offerDeliverySlot(uint idOfDS) public returns (bool success)
     {
-      //prüfe Vergangeheit
       DeliverySlot storage deSlot =suppliers[msg.sender].deliverySlots[idOfDS] = deSlot;
+      //check if Old
+      if(myDelSlot.timeTo >   block.timestamp) return false;
+
       deSlot.isTradeable = true;
       return true;
     }
 
     function setBuyOrderDeliverySlot() public returns (bool success)
     {
-      //prüfe Vergangeheit
-      //Foreach offener Blockchains
+
+      //Foreach available Slot
       return true;
     }
 
