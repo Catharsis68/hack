@@ -17,6 +17,14 @@
   <br><br><button id="send" onclick="App.sendCoin()">Send MetaCoin</button>
   <br><br>
   <span id="status"></span>
+
+  <!-- input data: time from - to date -->
+  <input type="time" class="time" value="12:00" required></input>
+  <input type="time" class="time" id="from" value="12:30" required></input>
+  <input type="date" class="date" value="new Date()" required></input>
+
+  <input type="button" onclick="searchRequest()" value="Anfragen">
+
   <br>
   <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
 </body>

@@ -1,80 +1,59 @@
 pragma solidity ^0.4.0;
-contract DeliveryTimeManagement {
+contract TimeDeliveryManagement {
 
-    struct Supplier {
-      mapping (uint => DeliverySlot) slots;
-      address deliverySlotId;
-      bool isTradeable;
-      string timeFrom;
-      string timeTo;
-      string timestamp;
+   string public debug ;
 
-      enum type;
-      enum ActionChoices { Food, Nonfood, freezer }
-      uint price;
+   struct DeliverySlot{
+       uint256 id;
+       bool    isTradeable;
+       string  timeFrom;
+       string  timeTo;
+       uint    price;
+       string  gate;
+       string  warehouseName;
+   }
+   struct Supplier {
+       address userId;
+       DeliverySlot[] deliverySlots;
+   }
 
-      string gate;
-      string warehouse;
-    }
+   uint256 public maxid;
 
-    struct Proposal {
-      uint voteCount;
-    }
+   address public warehouse;
+   mapping(address => Supplier) suppliers;
 
-    function getBlockTimestamp() constant returns (uint) // returns current block timestamp in SECONDS (not ms) from epoch
-    {
-    	return block.timestamp; 						 // also "now" == "block.timestamp", as in "return now;"
-    }
 
-    address warehouse;
-    mapping(address => Supplier) suppliers;
-    Proposal[] proposals;
+   function TimeDeliveryManagement() public {
+           warehouse = msg.sender;
+           debug = "wir gewinnen";
+           maxid = 0;
+       }
 
-    /// Create a new ballot with $(_numProposals) different proposals.
-    function Ballot(uint8 _numProposals) public {
-        warehouse = msg.sender;
-        suppliers[warehouse].weight = 1;
-        proposals.length = _numProposals;
-    }
+   function createDeliverySlot()  public {
+       if (msg.sender != warehouse) return;
+            suppliers[msg.sender].deliverySlots.push(DeliverySlot({
+               id: maxid++, isTradeable: true, timeFrom: "gestern", timeTo: "heute", price:5, gate:"123", warehouseName: "Warenhaus1"
+           }));
+           debug = "hat geklappt";
+   }
 
-    /// Give $(toVoter) the right to vote on this ballot.
-    /// May only be called by $(chairperson).
-    function giveRightToVote(address toSupplier) public {
-        if (msg.sender != warehouse || suppliers[toSupplier].voted) return;
-        suppliers[toSupplier].weight = 1;
-    }
+   function getFirstDeliverySlots(uint256 indexofDS) public returns (string success)
+   {
+       success = suppliers[warehouse].deliverySlots[indexofDS].timeFrom;
+   }
 
-    /// Delegate your vote to the voter $(to).
-    function delegate(address to) public {
-        Voter storage sender = suppliers[msg.sender]; // assigns reference
-        if (sender.voted) return;
-        while (suppliers[to].delegate != address(0) && suppliers[to].delegate != msg.sender)
-            to = suppliers[to].delegate;
-        if (to == msg.sender) return;
-        sender.voted = true;
-        sender.delegate = to;
-        Voter storage delegateTo = suppliers[to];
-        if (delegateTo.voted)
-            proposals[delegateTo.vote].voteCount += sender.weight;
-        else
-            delegateTo.weight += sender.weight;
-    }
+   function getAllDeliverySlots(string searchstring) public returns (string success)
+   {
+       string s1=  suppliers[warehouse].deliverySlots[0].timeFrom;
+       string s2=  suppliers[warehouse].deliverySlots[0].timeTo;
+       success = s1;
+   }
 
-    /// Give a single vote to proposal $(toProposal).
-    function vote(uint8 toProposal) public {
-        Voter storage sender = suppliers[msg.sender];
-        if (sender.voted || toProposal >= proposals.length) return;
-        sender.voted = true;
-        sender.vote = toProposal;
-        proposals[toProposal].voteCount += sender.weight;
-    }
+   function bookDeliverySlot(uint256 idOfDS) public returns (string success)
+   {
+     DeliverySlot deSlot = suppliers[warehouse].deliverySlots[0];
+     deSlot.isTradeable = false;
+     suppliers[msg.sender].deliverySlots.push();
+   }
 
-    function winningProposal() public constant returns (uint8 _winningProposal) {
-        uint256 winningVoteCount = 0;
-        for (uint8 prop = 0; prop < proposals.length; prop++)
-            if (proposals[prop].voteCount > winningVoteCount) {
-                winningVoteCount = proposals[prop].voteCount;
-                _winningProposal = prop;
-            }
-    }
 }
