@@ -19,6 +19,8 @@ var TimeDeliveryManagement = contract(tdm_artifacts);
 var accounts;
 var account;
 
+var date;
+
 window.App = {
   start: function() {
     var self = this;
@@ -87,15 +89,47 @@ window.App = {
     });
   },
 
+  setDate: function() {
+    date = new Date();
+    console.log(`Date ${date}.`);
+  },
+
+  createDeliverySlot: function() {
+
+  },
+
+  updateDeliverySlot: function() {
+    var self = this;
+
+    var tdm;
+    TimeDeliveryManagement.deployed().then(function(instance){
+      tdm = instance;
+
+      return tdm.update(123434, true, "string from", "string to", 25, "string gate", "string warehouseName", "string deliveryType");
+    })
+    .then(res => console.log(res))
+    .catch(error => {
+      console.log(error);
+      self.setStatus(`Error ${error}`);
+    });
+
+
+  },
+
   sendRequest:function() {
     var self = this;
 
-    var from = parseInt(document.getElementById("from").value);
-    var to = document.getElementById("to").value;
+    setDate();
 
+    var from = parseInt(document.getElementById("from").value);
+    var to = parseInt(document.getElementById("to").value);
+
+    var type = document.getElementById("deliveryType").value;
+
+    var inputDate = date ? date : 'date not defined';
     // TimeDeliveryManagement.
 
-    console.log(`von: ${from} bis ${to} Uhr.`);
+    console.log(`von: ${from} bis ${to} Uhr am ${date} mit dem Typ: ${deliveryType}`);
   }
 
 };
