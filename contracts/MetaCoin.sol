@@ -9,7 +9,6 @@ import "./ConvertLib.sol";
 
 contract MetaCoin {
 	
-
 	mapping (address => uint) balances;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);

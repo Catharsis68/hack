@@ -7,9 +7,11 @@ import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
 import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
+import tdm_artifacts from '../../build/contracts/TimeDeliveryManagement.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
 var MetaCoin = contract(metacoin_artifacts);
+var TimeDeliveryManagement = contract(tdm_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -83,7 +85,19 @@ window.App = {
       console.log(e);
       self.setStatus("Error sending coin; see log.");
     });
+  },
+
+  sendRequest:function() {
+    var self = this;
+
+    var from = parseInt(document.getElementById("from").value);
+    var to = document.getElementById("to").value;
+
+    // TimeDeliveryManagement.
+
+    console.log(`von: ${from} bis ${to} Uhr.`);
   }
+
 };
 
 window.addEventListener('load', function() {

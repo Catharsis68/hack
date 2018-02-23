@@ -11,7 +11,9 @@ contract TimeDeliveryManagement {
        uint    price;
        string  gate;
        string  warehouseName;
+       string  deliveryType;
    }
+
    struct Supplier {
        address userId;
        DeliverySlot[] deliverySlots;
@@ -32,7 +34,7 @@ contract TimeDeliveryManagement {
    function createDeliverySlot()  public {
        if (msg.sender != warehouse) return;
             suppliers[msg.sender].deliverySlots.push(DeliverySlot({
-               id: maxid++, isTradeable: true, timeFrom: "gestern", timeTo: "heute", price:5, gate:"123", warehouseName: "Warenhaus1"
+               id: maxid++, isTradeable: true, timeFrom: "gestern", timeTo: "heute", price:5, gate:"123", warehouseName: "Warenhaus1", deliveryType: "Eis"
            }));
            debug = "hat geklappt";
    }
@@ -44,16 +46,16 @@ contract TimeDeliveryManagement {
 
    function getAllDeliverySlots(string searchstring) public returns (string success)
    {
-       string s1=  suppliers[warehouse].deliverySlots[0].timeFrom;
-       string s2=  suppliers[warehouse].deliverySlots[0].timeTo;
+       string storage s1 = suppliers[warehouse].deliverySlots[0].timeFrom;
+       string storage s2 = suppliers[warehouse].deliverySlots[0].timeTo;
        success = s1;
    }
 
    function bookDeliverySlot(uint256 idOfDS) public returns (string success)
    {
-     DeliverySlot deSlot = suppliers[warehouse].deliverySlots[0];
+     DeliverySlot storage deSlot = suppliers[warehouse].deliverySlots[0];
      deSlot.isTradeable = false;
-     suppliers[msg.sender].deliverySlots.push();
+     suppliers[msg.sender].deliverySlots.push(deSlot);
    }
 
 }
