@@ -82,22 +82,22 @@ contract TimeDeliveryManagement {
 
     function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
     {
-      DeliverySlot storage deSlot = suppliers[warehouse].deliverySlots[idOfDS];
+      DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idOfDS];
       //check if Old
       if(myDelSlot.timeTo >   block.timestamp) return false;
 
-      deSlot.isTradeable = false;
-      suppliers[msg.sender].deliverySlots[idOfDS] = deSlot;
+      myDelSlot.isTradeable = false;
+      suppliers[msg.sender].deliverySlots[idOfDS] = myDelSlot;
       return true;
     }
 
     function offerDeliverySlot(uint idOfDS) public returns (bool success)
     {
-      DeliverySlot storage deSlot =suppliers[msg.sender].deliverySlots[idOfDS] = deSlot;
+      DeliverySlot storage myDelSlot =suppliers[msg.sender].deliverySlots[idOfDS];
       //check if Old
       if(myDelSlot.timeTo >   block.timestamp) return false;
 
-      deSlot.isTradeable = true;
+      myDelSlot.isTradeable = true;
       return true;
     }
 
