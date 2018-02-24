@@ -1,7 +1,4 @@
-
-//https://github.com/willitscale/solidity-util#concatstring--string kopiert
-import "github.com/willitscale/solidity-util/lib/Strings.sol";
-//import "./Strings.sol";
+import "./Strings.sol";
 
 pragma solidity ^0.4.0;
 
@@ -10,7 +7,6 @@ contract TimeDeliveryManagement {
 
     struct DeliverySlot{
         uint id;
-
         string  warehousename;
         bool    isTradeable;
         uint32  timeFrom;
@@ -21,7 +17,7 @@ contract TimeDeliveryManagement {
         address supplierAd;
     }
 
-    struct Supplier {
+    struct Supplier {x
         address supId;
         mapping (uint => DeliverySlot) deliverySlots;
     }
@@ -34,26 +30,30 @@ contract TimeDeliveryManagement {
 
     function TimeDeliveryManagement() public {
             warehouse = msg.sender;
-            debug = "started";
-            maxDSId =0;
+
+            if (maxDSId > 0) {
+              debug = "nix zu tun";
+            } else if (maxDSId == 0 ) {
+              debug = "sggrgrgrssgrgsrgr";
+            } else {
+              debug = '3';
+            }
     }
 
 
 //e.g. 1,"Warehousname",true,0,0,0,"A1","Food","0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
-
     function createDeliverySlot(uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)  public returns (uint)
     {
+        debug = "rejected";
         if (msg.sender != warehouse) return;
-        maxDSId++;
-        uint currentID = maxDSId;
+        maxDSId = maxDSId + 1;
+        id = maxDSId;
 
-        suppliers[warehouse].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
+        suppliers[warehouse].deliverySlots[id] = DeliverySlot(id, warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
         debug = "successful createDeliverySlot";
 
-        return currentID+maxDSId;
+        return id;
     }
-
-
 
     function createSupplier(address fromAddress)  public returns (bool success)
     {
@@ -66,7 +66,6 @@ contract TimeDeliveryManagement {
         return success;
     }
 
-
     function getAllDeliverySlots(int fromTimeFilter, int toTimeFilter) public view returns (uint[3] arrayIDs)
     {
         for (uint i = 1; i < maxDSId; i++) {
@@ -77,11 +76,11 @@ contract TimeDeliveryManagement {
         return arrayIDs;
     }
 
-    function getDetailsDeliverySlots(uint idDS) public view returns (uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)
+    function getDetailsDeliverySlots(uint idDS) public view returns (uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType)
     {
       DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idDS];
       //check if owner is warehouse or sender
-      if(myDelSlot.supplierAd == address(0) || myDelSlot.supplierAd ==msg.sender  ) return false;
+      if(myDelSlot.supplierAd == address(0) || myDelSlot.supplierAd ==msg.sender  ) return;
       id = myDelSlot.id;
       warehousename = myDelSlot.warehousename;
       isTradeable = myDelSlot.isTradeable;
