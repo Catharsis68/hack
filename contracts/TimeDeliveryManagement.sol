@@ -33,19 +33,24 @@ contract TimeDeliveryManagement {
 
    function createDeliverySlot() public {
      debug = "in createDeliverySlot()";
-       if (msg.sender != warehouse) return;
-            suppliers[msg.sender].deliverySlots.push(DeliverySlot({
-               id: maxid++, isTradeable: true, timeFrom: "gestern", timeTo: "heute", price:5, gate:"123", warehouseName: "Warenhaus1", deliveryType: "Eis"
-           }));
-           debug = "hat geklappt";
+       if (msg.sender != warehouse)
+          return;
+      else
+        suppliers[msg.sender].deliverySlots.push(DeliverySlot({
+          id: maxid++, isTradeable: true, timeFrom: "gestern", timeTo: "heute", price:5, gate:"123", warehouseName: "Warenhaus1", deliveryType: "Eis"
+        }));
+        debug = "hat geklappt";
    }
 
    function update(uint256 id, bool isTradeable, string from, string to, uint price, string gate, string warehouseName, string deliveryType)  public {
-       if (msg.sender != warehouse) return;
-            suppliers[msg.sender].deliverySlots.push(DeliverySlot({
-              id: id, isTradeable: isTradeable, timeFrom: from, timeTo: to, price: price, gate: gate, warehouseName: warehouseName, deliveryType: deliveryType
-           }));
-           debug = "hat geklappt";
+       if (msg.sender != warehouse)
+          return;
+      else
+        suppliers[msg.sender].deliverySlots.push(DeliverySlot({
+          id: id, isTradeable: isTradeable, timeFrom: from, timeTo: to, price: price, gate: gate, warehouseName: warehouseName, deliveryType: deliveryType
+        }));
+        debug = "hat geklappt";
+      }
    }
 
    function getFirstDeliverySlots(uint256 indexofDS) public returns (string success)

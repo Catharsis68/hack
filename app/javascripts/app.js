@@ -1,5 +1,6 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
+// var faker = require('faker');
 
 // Import libraries we need.
 import { default as Web3} from 'web3';
@@ -27,18 +28,18 @@ window.App = {
     document.getElementById('datePicker').valueAsDate = new Date();
 
     // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider);
+    // MetaCoin.setProvider(web3.currentProvider);
 
     // Init TimeDeliveryManagement
     TimeDeliveryManagement.setProvider(web3.currentProvider);
 
     // TODO remove
-    web3.eth.getBlock(48, function(error, result){
-        if(!error)
-            console.log(JSON.stringify(result));
-        else
-            console.error(error);
-    })
+    // web3.eth.getBlock(48, function(error, result){
+    //     if(!error)
+    //         console.log(JSON.stringify(result));
+    //     else
+    //         console.error(error);
+    // })
 
     console.log('isConnected', web3.isConnected());
     console.log(web3.currentProvider);
@@ -108,17 +109,26 @@ window.App = {
   },
 
   createDeliverySlot: function() {
-    console.log(`createDeliverySlot`);
     var self = this;
-    console.log('1');
 
     var tdm;
+    var contract;
     TimeDeliveryManagement.deployed().then(function(instance) {
       tdm = instance;
-      console.log('2');
-      console.log('tdm', tdm);
+      contract = tdm.contract;
 
-      return tdm.createDeliverySlot();
+      console.log('contract ', contract);
+
+      // API ref: myContract.methods.myMethod(123)
+      console.log('contract.address', contract.address);
+      console.log('account ', account);
+      console.log('send ', contract.createDeliverySlot().send({from: account}));
+      // console.log('send ', contract.createDeliverySlot().call({from: account}));
+
+      // invoke method then send
+
+
+      return tdm.contract.createDeliverySlot();
 
       // return tdm.createDeliverySlot(123434, true, "string from", "string to", 25, "string gate", "string warehouseName", "string deliveryType");
     })
@@ -146,8 +156,6 @@ window.App = {
       console.log(error);
       self.setStatus(`Error ${error}`);
     });
-
-
   },
 
   sendRequest:function() {
@@ -161,8 +169,6 @@ window.App = {
 
     var date = document.getElementById('datePicker').value;
     // valueAsDate // valueAsNumber
-
-    // TimeDeliveryManagement.
 
     console.log(`von: ${from} bis ${to} Uhr am ${date} mit dem Typ: ${type}`);
   }
