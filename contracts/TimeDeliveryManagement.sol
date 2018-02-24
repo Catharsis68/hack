@@ -43,14 +43,16 @@ contract TimeDeliveryManagement {
 
 //e.g. 1,"Warehousname",true,0,0,0,"A1","Food","0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
 
-    function createDeliverySlot(uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)  public returns (uint currentID)
+    function createDeliverySlot(uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)  public returns (uint)
     {
         if (msg.sender != warehouse) return;
-        currentID = maxDSId++;
+        maxDSId++;
+        uint currentID = maxDSId;
 
         suppliers[warehouse].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
         debug = "successful createDeliverySlot";
-        return currentID;
+
+        return currentID+maxDSId;
     }
 
 
