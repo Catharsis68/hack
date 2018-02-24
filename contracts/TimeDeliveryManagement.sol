@@ -2,8 +2,8 @@
 //import "https://github.com/Arachnid/solidity-stringutils/blob/master/strings.sol";
 
 //https://github.com/willitscale/solidity-util#concatstring--string kopiert
-import "github.com/willitscale/solidity-util/lib/Strings.sol";
-//import "./Strings.sol";
+//import "github.com/willitscale/solidity-util/lib/Strings.sol";
+import "./Strings.sol";
 
 pragma solidity ^0.4.0;
 
@@ -40,15 +40,22 @@ contract TimeDeliveryManagement {
             maxDSId =0;
     }
 
-    function createDeliverySlot(string warehousename,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType)  public returns (uint currentID)
+
+//e.g. 1,"Warehousname",true,0,0,0,"A1","Food","0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
+
+    function createDeliverySlot(uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)  public returns (uint)
     {
         if (msg.sender != warehouse) return;
-        currentID = maxDSId++;
+        maxDSId++;
+        uint currentID = maxDSId;
 
-        suppliers[msg.sender].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
+        suppliers[warehouse].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
         debug = "successful createDeliverySlot";
-        return currentID;
+
+        return currentID+maxDSId;
     }
+
+
 
     function createSupplier(address fromAddress)  public returns (bool success)
     {
@@ -62,11 +69,11 @@ contract TimeDeliveryManagement {
     }
 
 
-    function getAllDeliverySlots(string searchstring) public returns (string response)
+    function getAllDeliverySlots(string searchstring) public view returns (bytes)
     {
-        response = "{[";
+        //string memory response = "{[";
 
-        for (uint i = 1; i < maxDSId; i++) {
+        /* for (uint i = 1; i < maxDSId; i++) {
           DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
           //check if Old  //check if available
           if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) continue;
@@ -79,11 +86,14 @@ contract TimeDeliveryManagement {
           response.concat(myDelSlot.logisticType).concat(" , ");
           response.concat("},");
           //Todo , not in last record
-        }
-        response.concat("]}");
-        debug = "successful getAllDeliverySlots";
+        } */
+        //DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[maxDSId];
+        //string memory response = response.concat(myDelSlot.warehousename);
+        //response = response.concat("]}");
+        //debug = "successful getAllDeliverySlots";
 
-        return response;
+        //return  suppliers[warehouse].deliverySlots[maxDSId].warehousename.concat(debug).concat(" ; ").concat(searchstring);
+        return bytes(suppliers[warehouse].deliverySlots[maxDSId].warehousename);
     }
 
     function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
@@ -128,5 +138,12 @@ contract TimeDeliveryManagement {
 
       return dsID;
     }
+
+    function toBytes(uint256 x) returns (bytes b) {
+        b = new bytes(32);
+        assembly { mstore(add(b, 32), x) }
+    }
+
+
 
 }
