@@ -77,32 +77,14 @@ contract TimeDeliveryManagement {
         return arrayIDs;
     }
 
-    function getDetailsDeliverySlots(int fromTime, int toTime) public view returns (bytes)
+    function getDetailsDeliverySlots(uint idDS) public view returns (uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)
     {
-        /* response = "{[";
-
-        for (uint i = 1; i < maxDSId; i++) {
-          DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
-          //check if Old  //check if available
-          if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) continue;
-
-          response.concat("{");
-          response.concat(myDelSlot.warehousename).concat(" , ");
-          //success.concat(myDelSlot.timeFrom).concat(" , ");
-          //success.concat(myDelSlot.timeTo).concat(" , ");
-          response.concat(myDelSlot.gate).concat(" , ");
-          response.concat(myDelSlot.logisticType).concat(" , ");
-          response.concat("},");
-          //Todo , not in last record
-        } */
-        //DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[maxDSId];
-        //string memory response = response.concat(myDelSlot.warehousename);
-        //response = response.concat("]}");
-        //debug = "successful getAllDeliverySlots";
-        //return response;
-
-        //return  suppliers[warehouse].deliverySlots[maxDSId].warehousename.concat(debug).concat(" ; ").concat(searchstring);
-        return bytes(suppliers[warehouse].deliverySlots[maxDSId].warehousename);
+      DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idDS];
+      //check if owner is warehouse or sender
+      if(myDelSlot.supplierAd == address(0) || myDelSlot.supplierAd ==msg.sender  ) return false;
+      id = myDelSlot.id;
+      warehousename = myDelSlot.warehousename;
+      isTradeable = myDelSlot.isTradeable;
     }
 
     function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
