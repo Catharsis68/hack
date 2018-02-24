@@ -1,5 +1,4 @@
 
-//https://github.com/willitscale/solidity-util#concatstring--string kopiert
 import "github.com/willitscale/solidity-util/lib/Strings.sol";
 //import "./Strings.sol";
 
@@ -81,10 +80,19 @@ contract TimeDeliveryManagement {
     {
       DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idDS];
       //check if owner is warehouse or sender
-      if(myDelSlot.supplierAd == address(0) || myDelSlot.supplierAd ==msg.sender  ) return false;
-      id = myDelSlot.id;
-      warehousename = myDelSlot.warehousename;
-      isTradeable = myDelSlot.isTradeable;
+      if(myDelSlot.supplierAd == address(0) || myDelSlot.supplierAd ==msg.sender  ){
+        id = myDelSlot.id;
+        warehousename = myDelSlot.warehousename;
+        isTradeable = myDelSlot.isTradeable;
+        timeFrom = myDelSlot.timeFrom;
+        timeTo = myDelSlot.timeTo;
+        price = myDelSlot.price;
+        gate = myDelSlot.gate;
+        logisticType = myDelSlot.logisticType;
+        ownAdress = myDelSlot.supplierAd;
+
+      }
+
     }
 
     function purchaseDeliverySlot(uint idOfDS) public returns (bool success)

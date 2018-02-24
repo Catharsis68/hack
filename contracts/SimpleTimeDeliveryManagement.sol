@@ -1,5 +1,4 @@
 
-//https://github.com/willitscale/solidity-util#concatstring--string kopiert
 import "github.com/willitscale/solidity-util/lib/Strings.sol";
 //import "./Strings.sol";
 
