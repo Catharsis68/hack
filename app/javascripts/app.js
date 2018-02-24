@@ -1,5 +1,6 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
+var { now } = require('./utils.js');
 // var faker = require('faker');
 
 // Import libraries we need.
@@ -41,9 +42,6 @@ window.App = {
     //         console.error(error);
     // })
 
-    console.log('isConnected', web3.isConnected());
-    console.log(web3.currentProvider);
-    // web3.eth.call({type: '90'});
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -62,13 +60,9 @@ window.App = {
 
       console.log('account', account);
 
+      self.listDeliverySlots();
       self.createDeliverySlot();
     });
-  },
-
-  setStatus: function(message) {
-    var status = document.getElementById("status");
-    status.innerHTML = message;
   },
 
   refreshBalance: function() {
@@ -93,8 +87,6 @@ window.App = {
     var amount = parseInt(document.getElementById("amount").value);
     var receiver = document.getElementById("receiver").value;
 
-    this.setStatus("Initiating transaction... (please wait)");
-
     var meta;
     MetaCoin.deployed().then(function(instance) {
       meta = instance;
@@ -108,37 +100,85 @@ window.App = {
     });
   },
 
+
+  /** list all delivery slots
+   * @param {number} startTime as seconds
+   * @param {number} endTime as seconds
+   * @return {bytes} length 10
+   */
+  listDeliverySlots: function() {
+
+    var timeFrom = now;
+    var timeTo = now;
+
+    console.log(`from: ${from} - to: ${to}`);
+
+  },
+
+  // function createSupplier(address fromAddress)  public returns (bool success)
+  /* createSupplier: function() {
+    var self = this;
+    var tdm;
+
+    TimeDeliveryManagement.deployed()
+      .then(function(instance)) {
+        tdm = instance;
+
+        return tdm.createSupplier().send({from: account});
+
+        // contract.createSupplier()
+        //   .send({from: account})
+        //   .then(function(data) {
+        //       console.log('data', data);
+        // });
+      }
+      .catch(function(error) {
+        console.log(error);
+        self.setStatus(`Error ${error}.`);
+      });
+  }, */
+
   createDeliverySlot: function() {
     var self = this;
 
     var tdm;
     var contract;
-    TimeDeliveryManagement.deployed().then(function(instance) {
-      tdm = instance;
-      contract = tdm.contract;
+    TimeDeliveryManagement.deployed()
+      .then(function(instance) {
+        tdm = instance;
+        contract = tdm.contract;
 
-      console.log('contract ', contract);
+        console.log('contract ', contract);
 
-      // API ref: myContract.methods.myMethod(123)
-      console.log('contract.address', contract.address);
-      console.log('account ', account);
-      console.log('send ', contract.createDeliverySlot().send({from: account}));
-      // console.log('send ', contract.createDeliverySlot().call({from: account}));
+        // API ref: myContract.methods.myMethod(123)
+        console.log('contract.address', contract.address);
+        console.log('account ', account);
 
-      // invoke method then send
+        let id = 111;
+        let warehouseName = 'penny';
+        let isTradeable = true;
+        let from = 12345;
+        let to = 54321;
+        let price = 25;
+        let gate = 'gateName';
+        let deliveryType = 'food'
+        //
+        // contract.createDeliverySlot(id, warehouseName, isTradeable, from, to, price, gate, deliveryType)
+        //   .send({from: account})
+        //   .then(function(ds) {
+        //       console.log('ds', ds);
+        //     })
+        //     .catch(function(error) {
+        //       console.log(`error ${error}`);
+        //     });
 
-
-      return tdm.contract.createDeliverySlot();
-
-      // return tdm.createDeliverySlot(123434, true, "string from", "string to", 25, "string gate", "string warehouseName", "string deliveryType");
+        // return tdm.contract.createDeliverySlot('warehouseName',1519457019, 1519457043, 35, 'gate25', 'food'); // .send({from: account});
     })
     .then(function(res) {
-      self.setStatus("Transaction complete!");
       console.log('create delivery slot success', res);
     })
     .catch(function(error) {
       console.log(error);
-      self.setStatus(`Error ${error}.`);
     });
   },
 
@@ -146,10 +186,11 @@ window.App = {
     var self = this;
 
     var tdm;
-    TimeDeliveryManagement.deployed().then(function(instance){
-      tdm = instance;
+    TimeDeliveryManagement.deployed()
+      .then(function(instance) {
+        tdm = instance;
 
-      return tdm.update(123434, true, "string from", "string to", 25, "string gate", "string warehouseName", "string deliveryType");
+        return tdm.update(123434, true, "string from", "string to", 25, "string gate", "string warehouseName", "string deliveryType");
     })
     .then(res => console.log(res))
     .catch(error => {
@@ -161,14 +202,10 @@ window.App = {
   sendRequest:function() {
     var self = this;
 
-    var from = parseInt(document.getElementById("from").value);
-    var to = parseInt(document.getElementById("to").value);
-
-    var e = document.getElementById("deliveryType");
-    var type = e.options[e.selectedIndex].text;
-
+    var from = document.getElementById("from").value;
+    var to = document.getElementById("to").value;
     var date = document.getElementById('datePicker').value;
-    // valueAsDate // valueAsNumber
+    var type = document.getElementById("deliveryType").value;
 
     console.log(`von: ${from} bis ${to} Uhr am ${date} mit dem Typ: ${type}`);
   }
