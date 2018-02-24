@@ -1,79 +1,131 @@
+
+//import "https://github.com/Arachnid/solidity-stringutils/blob/master/strings.sol";
+
+//https://github.com/willitscale/solidity-util#concatstring--string kopiert
+import "./Strings.sol";
+
 pragma solidity ^0.4.0;
+
 contract TimeDeliveryManagement {
+    using Strings for string;
 
-   string public debug ;
+    struct DeliverySlot{
+        uint id;
 
-   struct DeliverySlot{
-       uint256 id;
-       bool    isTradeable;
-       string  timeFrom;
-       string  timeTo;
-       uint    price;
-       string  gate;
-       string  warehouseName;
-       string  deliveryType;
-   }
-
-   struct Supplier {
-       address userId;
-       DeliverySlot[] deliverySlots;
-   }
-
-   uint256 public maxid;
-
-   address public warehouse;
-   mapping(address => Supplier) suppliers;
-
-
-   function TimeDeliveryManagement() public {
-           warehouse = msg.sender;
-           debug = "wir gewinnen";
-           maxid = 0;
+        string  warehousename;
+        bool    isTradeable;
+        uint32  timeFrom;
+        uint32  timeTo;
+        uint    price;
+        string  gate;
+        string  logisticType;
+        address supplierAd;
     }
 
-   function createDeliverySlot() public {
-     debug = "in createDeliverySlot()";
-       if (msg.sender != warehouse)
-          return;
-      else
-        suppliers[msg.sender].deliverySlots.push(DeliverySlot({
-          id: maxid++, isTradeable: true, timeFrom: "gestern", timeTo: "heute", price:5, gate:"123", warehouseName: "Warenhaus1", deliveryType: "Eis"
-        }));
-        debug = "hat geklappt";
-   }
+    struct Supplier {
+        address supId;
+        mapping (uint => DeliverySlot) deliverySlots;
+    }
 
-   function update(uint256 id, bool isTradeable, string from, string to, uint price, string gate, string warehouseName, string deliveryType)  public {
-       if (msg.sender != warehouse)
-          return;
-      else
-        suppliers[msg.sender].deliverySlots.push(DeliverySlot({
-          id: id, isTradeable: isTradeable, timeFrom: from, timeTo: to, price: price, gate: gate, warehouseName: warehouseName, deliveryType: deliveryType
-        }));
-        debug = "hat geklappt";
+    string public debug ;
+    uint public maxDSId;
+    address public warehouse;
+    mapping(address => Supplier) suppliers;
+
+
+    function TimeDeliveryManagement() public {
+            warehouse = msg.sender;
+            debug = "started";
+            maxDSId =0;
+    }
+
+    function createDeliverySlot(string warehousename,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType)  public returns (uint currentID)
+    {
+        if (msg.sender != warehouse) return;
+        currentID = maxDSId++;
+
+        suppliers[msg.sender].deliverySlots[currentID] = DeliverySlot(currentID,warehousename, true,timeFrom,timeTo,price,gate,logisticType, address(0));
+        debug = "successful createDeliverySlot";
+        return currentID;
+    }
+
+    function createSupplier(address fromAddress)  public returns (bool success)
+    {
+      //generate address in web3?
+      //initalise a amount of money?
+        if (msg.sender != warehouse) return;
+
+        suppliers[fromAddress] = Supplier(fromAddress);
+        debug = "successful createSupplier";
+        return success;
+    }
+
+
+    function getAllDeliverySlots(string searchstring) public returns (string response)
+    {
+        response = "{[";
+
+        for (uint i = 1; i < maxDSId; i++) {
+          DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
+          //check if Old  //check if available
+          if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) continue;
+
+          response.concat("{");
+          response.concat(myDelSlot.warehousename).concat(" , ");
+          //success.concat(myDelSlot.timeFrom).concat(" , ");
+          //success.concat(myDelSlot.timeTo).concat(" , ");
+          response.concat(myDelSlot.gate).concat(" , ");
+          response.concat(myDelSlot.logisticType).concat(" , ");
+          response.concat("},");
+          //Todo , not in last record
+        }
+        response.concat("]}");
+        debug = "successful getAllDeliverySlots";
+
+        return response;
+    }
+
+    function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
+    {
+      DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idOfDS];
+      //check if Old and isTradeable
+      if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) return false;
+
+      myDelSlot.isTradeable = false;
+      myDelSlot.supplierAd = msg.sender;
+      suppliers[warehouse].deliverySlots[idOfDS] = myDelSlot;
+
+      return true;
+    }
+
+    function offerDeliverySlot(uint idOfDS) public returns (bool success)
+    {
+      DeliverySlot storage myDelSlot =suppliers[msg.sender].deliverySlots[idOfDS];
+      //check if Old
+      if(myDelSlot.timeTo <   block.timestamp) return false;
+      // nur besizte darf freigeben
+      if(myDelSlot.supplierAd != msg.sender) return false;
+
+
+      myDelSlot.isTradeable = true;
+      return true;
+    }
+
+    function setBuyOrderDeliverySlot() public returns (uint dsID)
+    {
+      dsID = 0;
+      uint  minimaltimestamp;
+      minimaltimestamp = 2147483648;
+      //Foreach available Slot
+      for (uint i = 1; i < maxDSId; i++) {
+        DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
+        //check if Old //check if available
+        if(myDelSlot.timeFrom >   block.timestamp || !myDelSlot.isTradeable) continue;
+        if(myDelSlot.timeFrom <minimaltimestamp)
+          dsID= myDelSlot.id;
       }
-   }
 
-   function getFirstDeliverySlots(uint256 indexofDS) public returns (string success)
-   {
-       success = suppliers[warehouse].deliverySlots[indexofDS].timeFrom;
-   }
-
-   function getAllDeliverySlots(string searchstring) public returns (string success)
-   {
-       string storage s1 = suppliers[warehouse].deliverySlots[0].timeFrom;
-       string storage s2 = suppliers[warehouse].deliverySlots[0].timeTo;
-       success = s1;
-   }
-
-   function bookDeliverySlot(uint256 idOfDS) public returns (string success)
-   {
-     DeliverySlot storage deSlot = suppliers[warehouse].deliverySlots[0];
-     deSlot.isTradeable = false;
-     suppliers[msg.sender].deliverySlots.push(deSlot);
-   }
-
-   function getTimestamp() returns (string timestamp) {
-     return block.timestamp
-   }
+      return dsID;
+    }
 
 }
