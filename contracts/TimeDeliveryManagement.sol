@@ -2,7 +2,8 @@
 //import "https://github.com/Arachnid/solidity-stringutils/blob/master/strings.sol";
 
 //https://github.com/willitscale/solidity-util#concatstring--string kopiert
-import "./Strings.sol";
+import "github.com/willitscale/solidity-util/lib/Strings.sol";
+//import "./Strings.sol";
 
 pragma solidity ^0.4.0;
 
