@@ -6,13 +6,13 @@ import "../stylesheets/app.css";
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
-// Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
-import tdm_artifacts from '../../build/contracts/TimeDeliveryManagement.json'
+import tdm_artifacts from '../../build/contracts/SimpleTimeDeliveryManagement.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
-var TimeDeliveryManagement = contract(tdm_artifacts);
+//var MetaCoin = contract(metacoin_artifacts);
+//var TimeDeliveryManagement = contract(tdm_artifacts);
+var SimpleTimeDeliveryManagement = contract(tdm_artifacts);
+
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -31,7 +31,7 @@ window.App = {
     // MetaCoin.setProvider(web3.currentProvider);
 
     // Init TimeDeliveryManagement
-    TimeDeliveryManagement.setProvider(web3.currentProvider);
+    SimpleTimeDeliveryManagement.setProvider(web3.currentProvider);
 
     // TODO remove
     // web3.eth.getBlock(48, function(error, result){

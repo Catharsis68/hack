@@ -10,7 +10,6 @@ contract SimpleTimeDeliveryManagement {
 
     struct Supplier {
         address supId;
-
     }
 
     uint public maxDSId;
@@ -24,8 +23,6 @@ contract SimpleTimeDeliveryManagement {
             maxDSId =0;
     }
 
-
-//e.g. 1,"Warehousname",true,0,0,0,"A1","Food","0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
 //e.g. 1,"Warehousname","0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
 
     function createDeliverySlot(uint id, string warehousename, address ownAdress)  public
@@ -40,11 +37,7 @@ contract SimpleTimeDeliveryManagement {
     function createSupplier(address fromAddress)  public returns (bool success)
     {
         suppliers[fromAddress] = Supplier(fromAddress);
-        debug = "successful createSupplier";
         return success;
     }
-
-
-
 
 }
