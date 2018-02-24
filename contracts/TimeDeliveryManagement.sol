@@ -1,3 +1,5 @@
+
+//import "github.com/willitscale/solidity-util/lib/Strings.sol";
 import "./Strings.sol";
 
 pragma solidity ^0.4.0;
@@ -63,6 +65,7 @@ contract TimeDeliveryManagement {
 
         suppliers[fromAddress] = Supplier(fromAddress);
         debug = "successful createSupplier";
+        success = true;
         return success;
     }
 

@@ -39,7 +39,7 @@ contract SimpleTimeDeliveryManagement {
 
     function createSupplier(address fromAddress)  public returns (bool success)
     {
-        suppliers[fromAddress] = Supplier(fromAddress);        
+        suppliers[fromAddress] = Supplier(fromAddress);
         return success;
     }
 
