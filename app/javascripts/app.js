@@ -162,15 +162,15 @@ window.App = {
         let price = 25;
         let gate = 'gateName';
         let deliveryType = 'food'
-        //
-        // contract.createDeliverySlot(id, warehouseName, isTradeable, from, to, price, gate, deliveryType)
-        //   .send({from: account})
-        //   .then(function(ds) {
-        //       console.log('ds', ds);
-        //     })
-        //     .catch(function(error) {
-        //       console.log(`error ${error}`);
-        //     });
+        
+        contract.createDeliverySlot(id, warehouseName, isTradeable, from, to, price, gate, deliveryType)
+          .send({from: account})
+          .then(function(ds) {
+              console.log('ds', ds);
+            })
+            .catch(function(error) {
+              console.log(`error ${error}`);
+            });
 
         // return tdm.contract.createDeliverySlot('warehouseName',1519457019, 1519457043, 35, 'gate25', 'food'); // .send({from: account});
     })

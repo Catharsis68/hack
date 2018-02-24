@@ -1,9 +1,7 @@
 
-//import "https://github.com/Arachnid/solidity-stringutils/blob/master/strings.sol";
-
 //https://github.com/willitscale/solidity-util#concatstring--string kopiert
-//import "github.com/willitscale/solidity-util/lib/Strings.sol";
-import "./Strings.sol";
+import "github.com/willitscale/solidity-util/lib/Strings.sol";
+//import "./Strings.sol";
 
 pragma solidity ^0.4.0;
 
@@ -69,31 +67,24 @@ contract TimeDeliveryManagement {
     }
 
 
-    function getAllDeliverySlots(string searchstring) public view returns (bytes)
+    function getAllDeliverySlots(int fromTimeFilter, int toTimeFilter) public view returns (uint[3] arrayIDs)
     {
-        //string memory response = "{[";
+        for (uint i = 1; i < maxDSId; i++) {
+          if(arrayIDs[2] != 0) break;
+          if(suppliers[warehouse].deliverySlots[i].timeTo < toTimeFilter && suppliers[warehouse].deliverySlots[i].timeFrom < fromTimeFilter && suppliers[warehouse].deliverySlots[i].isTradeable)
+          arrayIDs[i-1]=i;
+        }
+        return arrayIDs;
+    }
 
-        /* for (uint i = 1; i < maxDSId; i++) {
-          DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[i];
-          //check if Old  //check if available
-          if(myDelSlot.timeTo > block.timestamp || !myDelSlot.isTradeable) continue;
-
-          response.concat("{");
-          response.concat(myDelSlot.warehousename).concat(" , ");
-          //success.concat(myDelSlot.timeFrom).concat(" , ");
-          //success.concat(myDelSlot.timeTo).concat(" , ");
-          response.concat(myDelSlot.gate).concat(" , ");
-          response.concat(myDelSlot.logisticType).concat(" , ");
-          response.concat("},");
-          //Todo , not in last record
-        } */
-        //DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[maxDSId];
-        //string memory response = response.concat(myDelSlot.warehousename);
-        //response = response.concat("]}");
-        //debug = "successful getAllDeliverySlots";
-
-        //return  suppliers[warehouse].deliverySlots[maxDSId].warehousename.concat(debug).concat(" ; ").concat(searchstring);
-        return bytes(suppliers[warehouse].deliverySlots[maxDSId].warehousename);
+    function getDetailsDeliverySlots(uint idDS) public view returns (uint id, string warehousename,bool isTradeable,uint32 timeFrom,uint32 timeTo,uint price,string gate,string logisticType, address ownAdress)
+    {
+      DeliverySlot storage myDelSlot = suppliers[warehouse].deliverySlots[idDS];
+      //check if owner is warehouse or sender
+      if(myDelSlot.supplierAd == address(0) || myDelSlot.supplierAd ==msg.sender  ) return false;
+      id = myDelSlot.id;
+      warehousename = myDelSlot.warehousename;
+      isTradeable = myDelSlot.isTradeable;
     }
 
     function purchaseDeliverySlot(uint idOfDS) public returns (bool success)
